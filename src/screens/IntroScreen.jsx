@@ -1,11 +1,47 @@
 // src/screens/IntroScreen.jsx
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Stars, Sparkles, OrbitControls, Environment } from "@react-three/drei";
 // 👇 Nhớ đường dẫn import có 2 dấu chấm
 import { PlanetarySystem } from "../components/3d/PlanetarySystem";
 
 export default function IntroScreen({ onEnter }) {
+  // Dùng useRef để giữ biến audio, giúp ta có thể can thiệp vào nó lúc component bị hủy
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // 1. Khởi tạo nhạc
+    audioRef.current = new Audio("/sounds/bgm.mp3"); // Hoặc menu_bgm.mp3 nếu bạn có file riêng
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.5;
+
+    // 2. Phát nhạc (Xử lý lỗi chặn autoplay)
+    const playMusic = () => {
+      if (audioRef.current) {
+        audioRef.current
+          .play()
+          .catch(() => console.log("Waiting for interaction..."));
+      }
+    };
+    playMusic();
+
+    // Sự kiện click để phát nếu bị chặn
+    const handleInteract = () => {
+      if (audioRef.current) audioRef.current.play().catch(() => {});
+      window.removeEventListener("click", handleInteract);
+    };
+    window.addEventListener("click", handleInteract);
+
+    // --- QUAN TRỌNG: PHẦN DỌN DẸP (CLEANUP) ---
+    // Đoạn này sẽ chạy TỰ ĐỘNG ngay trước khi màn hình này biến mất
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause(); // Dừng nhạc
+        audioRef.current.currentTime = 0; // Tua về đầu
+      }
+      window.removeEventListener("click", handleInteract);
+    };
+  }, []);
   return (
     <div
       style={{

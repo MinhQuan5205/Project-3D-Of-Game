@@ -1,5 +1,5 @@
 // src/screens/ArmoryScreen.jsx
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -21,6 +21,26 @@ export default function ArmoryScreen({ onStartGame, onBack }) {
   const [currentWeapon, setCurrentWeapon] = useState(null);
   const [isHudOpen, setIsHudOpen] = useState(true);
   const astro = CHARACTERS && CHARACTERS.length > 0 ? CHARACTERS[0] : null;
+
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // 1. Khởi tạo
+    audioRef.current = new Audio("/sounds/bgm.mp3");
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.4;
+
+    // 2. Phát nhạc
+    audioRef.current.play().catch((e) => console.log(e));
+
+    // --- QUAN TRỌNG: DỌN DẸP KHI RỜI MÀN HÌNH ---
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause(); // Tắt nhạc ngay lập tức
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
 
   return (
     <div className="main-container" style={{ width: "100%", height: "100%" }}>

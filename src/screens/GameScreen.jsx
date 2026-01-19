@@ -20,6 +20,19 @@ const LEVELS = {
 const BOSS_MAX_HP = 100;
 const PLAYER_SPEED = 0.15;
 
+// --- [AUDIO] HÀM HỖ TRỢ PHÁT NHẠC ---
+// Hàm này dùng cho các âm thanh ngắn (SFX) như bắn súng, thắng, thua
+const playSound = (filename, volume = 0.5) => {
+  try {
+    const audio = new Audio(`/sounds/${filename}`);
+    audio.volume = volume;
+    audio.currentTime = 0; // Tua lại đầu để không bị delay khi phát liên tục
+    audio.play().catch((e) => console.log("Audio play error:", e));
+  } catch (e) {
+    console.error("Sound error:", e);
+  }
+};
+
 // --- 3D COMPONENTS ---
 function Bullet({ position }) {
   const ref = useRef();
@@ -114,22 +127,14 @@ function Boss({ position, isHit }) {
       const speed = time.current;
 
       ref.current.position.x = Math.sin(speed) * 5;
-      ref.current.position.y = Math.cos(speed) * 1;
-
-      //   // Visual Hit Effect (Scaling)
-      //   if (isHit) {
-      //     ref.current.scale.setScalar(1.2); // Scale up when hit
-      //   } else {
-      //     ref.current.scale.setScalar(0.4); // Return to normal scale (0.4)
-      //   }
+      ref.current.position.y = Math.cos(speed) * 2;
     }
   });
 
   return (
     <group ref={ref} position={position}>
-      {/* Set base scale here, logic inside useFrame handles dynamic scaling */}
       <primitive object={clone} scale={[0.5, 0.5, 0.5]} rotation={[0, 0, 0]} />
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <torusGeometry args={[1.5, 0.1, 16, 100]} />
         <meshStandardMaterial
           color={isHit ? "white" : "red"}
@@ -160,19 +165,21 @@ function GameContent({
   const [bonuses, setBonuses] = useState([]);
   const [bossProjectiles, setBossProjectiles] = useState([]);
 
-  // FIX 2: Use State instead of Ref for rendering visual hit effect
   const [isBossHitVisual, setIsBossHitVisual] = useState(false);
 
   const { viewport, pointer } = useThree();
   const frameCount = useRef(0);
   const lastShot = useRef(0);
 
-  // FIX 1: Wrap shoot in useCallback
+  // --- [AUDIO] TÍCH HỢP TIẾNG BẮN SÚNG ---
   const shoot = useCallback(() => {
     if (isRespawning) return;
     const now = Date.now();
     if (now - lastShot.current < 150) return;
     lastShot.current = now;
+
+    // Phát âm thanh bắn súng
+    playSound("shoot.mp3", 0.3);
 
     const newBullet = {
       id: now,
@@ -183,7 +190,6 @@ function GameContent({
     setBullets((prev) => [...prev, newBullet]);
   }, [isRespawning]);
 
-  // Effect dependency is now safe because 'shoot' is memorized
   useEffect(() => {
     const handleDown = () => shoot();
     window.addEventListener("mousedown", handleDown);
@@ -224,7 +230,7 @@ function GameContent({
       if (frameCount.current % 100 === 0) {
         const time = frameCount.current / 60;
         const bossX = Math.sin(time) * 5;
-        const bossY = Math.cos(time * 2) * 2 + 2;
+        const bossY = Math.cos(time * 2);
         setBossProjectiles((prev) => [
           ...prev,
           { id: Date.now(), x: bossX, y: bossY, z: -10 },
@@ -252,7 +258,7 @@ function GameContent({
         const time = performance.now() / 1000;
         bossRef.current.position.set(
           Math.sin(time) * 5,
-          Math.cos(time * 2) * 2 + 2,
+          Math.cos(time * 2),
           -15,
         );
       }
@@ -279,6 +285,7 @@ function GameContent({
       setBullets((prev) =>
         prev.filter((bullet) => {
           const bPos = new THREE.Vector3(bullet.x, bullet.y, bullet.z);
+          // Khoảng cách va chạm
           if (bPos.distanceTo(bossRef.current.position) < 6) {
             setBossHP((prev) => {
               const newHP = prev - 2;
@@ -287,7 +294,6 @@ function GameContent({
             });
             setScore((s) => s + 50);
 
-            // Trigger Visual Hit Effect
             setIsBossHitVisual(true);
             setTimeout(() => setIsBossHitVisual(false), 100);
 
@@ -390,7 +396,6 @@ function GameContent({
         <BonusItem key={b.id} position={[b.x, b.y, b.z]} />
       ))}
 
-      {/* FIX 2: Pass state isBossHitVisual instead of ref */}
       {level === 3 && (
         <>
           <Boss position={[0, 3, -15]} isHit={isBossHitVisual} />
@@ -412,6 +417,48 @@ export default function GameScreen({ onBack, weaponEquipped }) {
   const [isRespawning, setIsRespawning] = useState(false);
   const [gameState, setGameState] = useState("playing");
 
+  // --- [AUDIO] QUẢN LÝ NHẠC NỀN & SỰ KIỆN TRẠNG THÁI ---
+  const bgmRef = useRef(null);
+
+  useEffect(() => {
+    // 1. Khởi tạo nhạc nền (BGM)
+    if (!bgmRef.current) {
+      bgmRef.current = new Audio("/sounds/playgame.mp3");
+      bgmRef.current.loop = true; // Lặp lại vô tận
+      bgmRef.current.volume = 0.4; // Âm lượng nền vừa phải
+    }
+
+    // 2. Xử lý âm thanh theo trạng thái Game
+    if (gameState === "playing") {
+      // Khi đang chơi: Phát nhạc nền + Tiếng Start
+      bgmRef.current.play().catch(() => {});
+
+      // Chỉ phát tiếng Start khi bắt đầu level (có thể thêm logic check để không phát khi respawn)
+      playSound("gamestart.mp3", 0.5);
+    } else {
+      // Khi không chơi (Thắng/Thua/Qua màn): Dừng nhạc nền
+      bgmRef.current.pause();
+      bgmRef.current.currentTime = 0;
+    }
+
+    // 3. Phát âm thanh sự kiện đặc biệt
+    if (gameState === "game-over") {
+      playSound("gameover.mp3", 0.4);
+    } else if (gameState === "victory") {
+      playSound("gamewin.mp3", 0.4);
+    } else if (gameState === "level-complete") {
+      // Dùng chung nhạc win khi qua màn
+      playSound("gamewin.mp3", 0.4);
+    }
+
+    // Cleanup khi thoát màn hình
+    return () => {
+      if (bgmRef.current) {
+        bgmRef.current.pause();
+      }
+    };
+  }, [gameState]); // Chạy lại khi gameState thay đổi
+
   const handleNextLevel = () => {
     setLevel((prev) => prev + 1);
     setGameState("playing");
@@ -419,12 +466,10 @@ export default function GameScreen({ onBack, weaponEquipped }) {
     setIsRespawning(false);
   };
 
-  // FIX 3: Centralized damage handling, removed the conflicting useEffect
   const handlePlayerHit = () => {
     if (lives > 1) {
       setLives((prev) => prev - 1);
       setIsRespawning(true);
-      // Auto turn off respawn after 3s
       setTimeout(() => setIsRespawning(false), 3000);
     } else {
       setLives(0);
@@ -465,7 +510,7 @@ export default function GameScreen({ onBack, weaponEquipped }) {
             bossHP={bossHP}
             setBossHP={setBossHP}
             isRespawning={isRespawning}
-            onPlayerHit={handlePlayerHit} // Pass handlePlayerHit down
+            onPlayerHit={handlePlayerHit}
           />
         )}
       </Canvas>
@@ -655,12 +700,6 @@ export default function GameScreen({ onBack, weaponEquipped }) {
                 replay
               </span>
             </button>
-            {/* <button className="cyber-button secondary">
-              <span>GLOBAL RANKING</span>
-              <span className="material-icons" style={{ fontSize: "1.2rem" }}>
-                leaderboard
-              </span>
-            </button> */}
           </div>
           <footer className="cyber-footer">
             <div
