@@ -104,24 +104,36 @@ export default function ArmoryScreen({ onStartGame, onBack }) {
         </button>
         <h2 className="hud-title">ARMORY SYSTEM</h2>
         <div className="weapon-list">
-          <div
+          <button
+            type="button"
             className={`weapon-item ${currentWeapon === null ? "active" : ""}`}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setCurrentWeapon(null);
+            }}
             onClick={() => setCurrentWeapon(null)}
           >
             <div className="weapon-icon">🚫</div>
             <div className="weapon-name">Tay không</div>
-          </div>
+          </button>
           {WEAPONS.map((w) => (
-            <div
+            <button
+              type="button"
               key={w.id}
               className={`weapon-item ${currentWeapon?.id === w.id ? "active" : ""}`}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentWeapon(w);
+              }}
               onClick={() => setCurrentWeapon(w)}
             >
               <div className="weapon-icon">
                 <img src={w.icon} alt={w.name} />
               </div>
               <div className="weapon-name">{w.name}</div>
-            </div>
+            </button>
           ))}
         </div>
 

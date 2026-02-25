@@ -195,6 +195,7 @@ html,
 
 .weapon-item {
   position: relative;
+  appearance: none;
   aspect-ratio: 16/10;
   background: linear-gradient(
     135deg,
@@ -210,6 +211,8 @@ html,
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .weapon-item:hover {
@@ -304,6 +307,12 @@ html,
 
 .armory-action-btn:hover {
   filter: brightness(1.1);
+}
+
+.weapon-hud,
+.toggle-btn,
+.armory-action-btn {
+  touch-action: manipulation;
 }
 
 /* --- 3. GIAO DIỆN GAMEPLAY (HUD) --- */
@@ -712,17 +721,22 @@ html,
   }
 
   .weapon-hud.closed {
-    transform: translateY(calc(100% + 40px));
+    transform: translateY(calc(100% - 60px));
   }
 
   .toggle-btn {
-    left: 50%;
-    top: -36px;
-    transform: translateX(-50%);
-    width: 64px;
-    height: 32px;
-    border-radius: 8px 8px 0 0;
+    left: auto;
+    right: 8px;
+    top: -56px;
+    transform: none;
+    width: 108px;
+    height: 56px;
+    font-size: 1.7rem;
+    border-radius: 12px 12px 0 0;
     box-shadow: 0 -4px 10px rgba(0, 255, 255, 0.2);
+    z-index: 1201;
+    padding: 0;
+    line-height: 1;
   }
 
   .weapon-list {
