@@ -4,6 +4,7 @@ import "./App.css"; // Giữ file CSS gốc để style hoạt động
 
 // Import 3 màn hình từ thư mục screens
 import IntroScreen from "./screens/IntroScreen";
+import GuideScreen from "./screens/GuideScreen";
 import ArmoryScreen from "./screens/ArmoryScreen";
 import GameScreen from "./screens/GameScreen";
 
@@ -25,7 +26,17 @@ export default function App() {
     <>
       {/* 1. Màn hình Intro */}
       {screen === "intro" && (
-        <IntroScreen onEnter={() => setScreen("armory")} />
+        <IntroScreen
+          onEnter={() => setScreen("armory")}
+          onGuide={() => setScreen("guide")}
+        />
+      )}
+
+      {screen === "guide" && (
+        <GuideScreen
+          onBack={() => setScreen("intro")}
+          onStart={() => setScreen("armory")}
+        />
       )}
 
       {/* 2. Màn hình Chọn đồ (Armory) */}

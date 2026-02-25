@@ -5,7 +5,7 @@ import { Stars, Sparkles, OrbitControls, Environment } from "@react-three/drei";
 // 👇 Nhớ đường dẫn import có 2 dấu chấm
 import { PlanetarySystem } from "../components/3d/PlanetarySystem";
 
-export default function IntroScreen({ onEnter }) {
+export default function IntroScreen({ onEnter, onGuide }) {
   // Dùng useRef để giữ biến audio, giúp ta có thể can thiệp vào nó lúc component bị hủy
   const audioRef = useRef(null);
 
@@ -80,48 +80,91 @@ export default function IntroScreen({ onEnter }) {
           color: "white",
           zIndex: 10,
           width: "100%",
+          padding: "0 16px",
+          boxSizing: "border-box",
         }}
       >
         <h1
           style={{
-            fontSize: "5rem",
+            fontSize: "clamp(2rem, 11vw, 5rem)",
             margin: 0,
             color: "#00ffff",
             textShadow: "0 0 20px cyan",
             fontFamily: "sans-serif",
+            lineHeight: 1.1,
           }}
         >
           GALAXY WARRIOR
         </h1>
-        <p style={{ fontSize: "1.2rem", letterSpacing: "5px", color: "#aaa" }}>
+        <p
+          style={{
+            fontSize: "clamp(0.8rem, 3.4vw, 1.2rem)",
+            letterSpacing: "clamp(1px, 1vw, 5px)",
+            color: "#aaa",
+          }}
+        >
           PROJECT OF 3D GAME
         </p>
 
-        <button
-          onClick={onEnter}
+        <div
           style={{
             marginTop: "40px",
-            padding: "15px 50px",
-            fontSize: "1.5rem",
-            background: "transparent",
-            border: "2px solid #00ffff",
-            color: "#00ffff",
-            cursor: "pointer",
-            borderRadius: "30px",
-            transition: "0.3s",
-            fontWeight: "bold",
-          }}
-          onMouseOver={(e) => {
-            e.target.style.background = "#00ffff";
-            e.target.style.color = "black";
-          }}
-          onMouseOut={(e) => {
-            e.target.style.background = "transparent";
-            e.target.style.color = "#00ffff";
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "12px",
           }}
         >
-          ENTER UNIVERSE
-        </button>
+          <button
+            onClick={onEnter}
+            style={{
+              padding: "clamp(10px, 2.5vw, 15px) clamp(20px, 7vw, 50px)",
+              fontSize: "clamp(1rem, 4.5vw, 1.5rem)",
+              background: "transparent",
+              border: "2px solid #00ffff",
+              color: "#00ffff",
+              cursor: "pointer",
+              borderRadius: "30px",
+              transition: "0.3s",
+              fontWeight: "bold",
+              minWidth: "min(80vw, 360px)",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = "#00ffff";
+              e.target.style.color = "black";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = "transparent";
+              e.target.style.color = "#00ffff";
+            }}
+          >
+            ENTER UNIVERSE
+          </button>
+
+          <button
+            onClick={onGuide}
+            style={{
+              padding: "clamp(10px, 2.5vw, 13px) clamp(20px, 7vw, 50px)",
+              fontSize: "clamp(0.9rem, 3.8vw, 1.1rem)",
+              background: "rgba(0, 255, 255, 0.14)",
+              border: "1px solid #00ffff",
+              color: "#d8ffff",
+              cursor: "pointer",
+              borderRadius: "30px",
+              transition: "0.3s",
+              fontWeight: "bold",
+              minWidth: "min(80vw, 360px)",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = "rgba(0, 255, 255, 0.28)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = "rgba(0, 255, 255, 0.14)";
+            }}
+          >
+            HÃY XEM HD TRƯỚC KHI CHƠI NHÁ !!!
+          </button>
+        </div>
       </div>
     </div>
   );

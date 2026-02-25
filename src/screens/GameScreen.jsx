@@ -192,8 +192,8 @@ function GameContent({
 
   useEffect(() => {
     const handleDown = () => shoot();
-    window.addEventListener("mousedown", handleDown);
-    return () => window.removeEventListener("mousedown", handleDown);
+    window.addEventListener("pointerdown", handleDown);
+    return () => window.removeEventListener("pointerdown", handleDown);
   }, [shoot]);
 
   useFrame(() => {
@@ -525,16 +525,9 @@ export default function GameScreen({ onBack, weaponEquipped }) {
               </span>
             ))}
           </div>
-          <div
-            style={{
-              color: "cyan",
-              fontFamily: "Press Start 2P",
-              marginTop: 10,
-              textAlign: "center",
-            }}
-          >
+          <div className="stage-indicator">
             STAGE {level} <br />
-            <span style={{ fontSize: "0.7rem", color: "white" }}>
+            <span className="stage-target">
               {level < 3
                 ? `TARGET: ${LEVELS[level].target}`
                 : "DEFEAT THE BOSS"}

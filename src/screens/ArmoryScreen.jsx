@@ -9,14 +9,12 @@ import {
   Environment,
 } from "@react-three/drei";
 
-// 👇 CHÚ Ý: Thêm dấu ".." vào trước các đường dẫn import
 import { WEAPONS, CHARACTERS } from "../constants/gameData";
 import { Astronaut } from "../components/3d/Astronaut";
 import { SpaceTraffic } from "../components/3d/SpaceTraffic";
 import { PlanetarySystem } from "../components/3d/PlanetarySystem";
-// import "../App.css"; // Không cần import CSS ở đây nếu App.jsx đã import
 
-// 👇 Nhận prop onStartGame từ cha
+//  Nhận prop onStartGame từ cha
 export default function ArmoryScreen({ onStartGame, onBack }) {
   const [currentWeapon, setCurrentWeapon] = useState(null);
   const [isHudOpen, setIsHudOpen] = useState(true);
@@ -44,7 +42,6 @@ export default function ArmoryScreen({ onStartGame, onBack }) {
 
   return (
     <div className="main-container" style={{ width: "100%", height: "100%" }}>
-      {/* ... (Giữ nguyên toàn bộ phần Canvas cũ của bạn) ... */}
       <div className="canvas-container">
         <Canvas camera={{ position: [0, 1, 4], fov: 50 }}>
           <ambientLight intensity={2} />
@@ -101,17 +98,12 @@ export default function ArmoryScreen({ onStartGame, onBack }) {
           />
         </Canvas>
       </div>
-
-      {/* ... (Phần HUD cũ giữ nguyên) ... */}
       <div className={`weapon-hud ${isHudOpen ? "" : "closed"}`}>
-        {/* ... (Code nút toggle và danh sách vũ khí giữ nguyên) ... */}
-        {/* Tôi lược bớt để code ngắn gọn, bạn giữ nguyên code cũ nhé */}
         <button className="toggle-btn" onClick={() => setIsHudOpen(!isHudOpen)}>
           {isHudOpen ? "▶" : "◀"}
         </button>
         <h2 className="hud-title">ARMORY SYSTEM</h2>
         <div className="weapon-list">
-          {/* Map danh sách vũ khí cũ... */}
           <div
             className={`weapon-item ${currentWeapon === null ? "active" : ""}`}
             onClick={() => setCurrentWeapon(null)}
@@ -135,31 +127,13 @@ export default function ArmoryScreen({ onStartGame, onBack }) {
 
         <button
           onClick={() => onStartGame(currentWeapon)}
-          style={{
-            marginTop: "3px",
-            padding: "1px",
-            background: "#00ffff",
-            color: "black",
-            border: "none",
-            fontWeight: "bold",
-            cursor: "pointer",
-            borderRadius: "2px",
-          }}
+          className="armory-action-btn"
         >
           START GAME
         </button>
         <button
           onClick={onBack}
-          style={{
-            marginTop: "3px",
-            padding: "1px",
-            background: "#00ffff",
-            color: "black",
-            border: "none",
-            fontWeight: "bold",
-            cursor: "pointer",
-            borderRadius: "2px",
-          }}
+          className="armory-action-btn"
         >
           RETURN INTRO OF THE GAME
         </button>
