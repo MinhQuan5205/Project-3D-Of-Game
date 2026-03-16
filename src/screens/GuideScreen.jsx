@@ -33,18 +33,6 @@ export default function GuideScreen({ onBack, onStart }) {
           </ul>
         </section>
 
-        <section className="guide-section">
-          <h2>
-            Rảnh Rỗi Thì Hãy Chơi Game - Trong lúc Bị Delay Máy Bay Tới 1 giờ
-            Sáng
-          </h2>
-          <ul>
-            <li>Chúc Hương Có Trò Chơi Giết Thời Gian Vui Vẻ</li>
-            <li>Trò Chơi Có Nhiều Lỗi Mong Hương Chấp Nhận Được :))))</li>
-            <li>Xin FeedBack Nháaaaa !!!!</li>
-          </ul>
-        </section>
-
         <div className="guide-actions">
           <button className="guide-btn secondary" onClick={onBack}>
             QUAY LẠI

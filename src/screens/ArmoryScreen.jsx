@@ -143,10 +143,7 @@ export default function ArmoryScreen({ onStartGame, onBack }) {
         >
           START GAME
         </button>
-        <button
-          onClick={onBack}
-          className="armory-action-btn"
-        >
+        <button onClick={onBack} className="armory-action-btn">
           RETURN INTRO OF THE GAME
         </button>
       </div>
