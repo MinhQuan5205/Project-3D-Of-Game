@@ -162,7 +162,7 @@ export default function IntroScreen({ onEnter, onGuide }) {
               e.target.style.background = "rgba(0, 255, 255, 0.14)";
             }}
           >
-            HÃY XEM HD TRƯỚC KHI CHƠI NHÁ !!!
+            INTRODUCTION OF GAMES
           </button>
         </div>
       </div>
